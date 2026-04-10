@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tami Sanal POS Demo</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --primary: #1a73e8;
+      --primary-dark: #1558b0;
+      --text-dark: #17233d;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 28px 28px 18px;
+      background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+      color: #fff;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 1.75rem;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .card {
+      padding: 24px 28px 32px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #f8fafc;
+      color: var(--text-dark);
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .note {
+      margin: 20px 0 0;
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .message {
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-top: 16px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--success);
+      display: block;
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--error);
+      display: block;
+    }
+
+    .footer {
+      padding: 18px 28px 24px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.92rem;
+      color: var(--muted);
+      background: #fafbff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Tami Sanal POS Demo</h1>
+      <p>Test amaçlı sanal pos ödeme formu. Kart bilgilerini girip işlemi doğrulayabilirsiniz.</p>
+    </section>
+
+    <div class="card">
+      <form id="payment-form">
+        <div class="field">
+          <label for="merchant">Mağaza/Tüccar Adı</label>
+          <input id="merchant" name="merchant" type="text" placeholder="Tami POS Demo" value="Garanti Ödeme" required />
+        </div>
+
+        <div class="field">
+          <label for="amount">Tutar (TL)</label>
+          <input id="amount" name="amount" type="number" placeholder="250.00" min="1" step="0.01" value="250.00" required />
+        </div>
+
+        <div class="field">
+          <label for="card-number">Kart Numarası</label>
+          <input id="card-number" name="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="0000 0000 0000 0000" autocomplete="cc-number" required />
+        </div>
+
+        <div class="group">
+          <div class="field">
+            <label for="expiry">Son Kullanma Tarihi</label>
+            <input id="expiry" name="expiry" type="text" placeholder="AA/YY" maxlength="5" autocomplete="cc-exp" required />
+          </div>
+          <div class="field">
+            <label for="cvc">CVC</label>
+            <input id="cvc" name="cvc" type="text" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="cc-csc" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">Açıklama</label>
+          <input id="description" name="description" type="text" placeholder="Sipariş açıklaması" />
+        </div>
+
+        <button class="button" type="submit">Ödemeyi Başlat</button>
+      </form>
+
+      <div id="message" class="message"></div>
+      <p class="note">Bu demo sayfa gerçek ödeme yapmaz. Form doğrulaması ve basit kullanıcı geri bildirimi için tasarlanmıştır.</p>
+    </div>
+
+    <div class="footer">
+      <strong>Not:</strong> Gerçek bir entegrasyon için Tami Sanal POS API belgelerini ve güvenli sunucu tarafı iş akışını kullanın.
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('payment-form');
+    const message = document.getElementById('message');
+
+    function normalizeCardNumber(value) {
+      return value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    function validateExpiry(value) {
+      const [month, year] = value.split('/').map((part) => part && part.trim());
+      if (!month || !year || month.length !== 2 || year.length !== 2) return false;
+      const monthNum = Number(month);
+      const yearNum = Number(year);
+      if (monthNum < 1 || monthNum > 12) return false;
+      const now = new Date();
+      const expiry = new Date(2000 + yearNum, monthNum - 1, 1);
+      return expiry >= new Date(now.getFullYear(), now.getMonth(), 0);
+    }
+
+    function showMessage(text, type = 'success') {
+      message.textContent = text;
+      message.className = `message ${type}`;
+    }
+
+    function hideMessage() {
+      message.textContent = '';
+      message.className = 'message';
+    }
+
+    document.getElementById('card-number').addEventListener('input', (event) => {
+      event.target.value = normalizeCardNumber(event.target.value);
+    });
+
+    document.getElementById('expiry').addEventListener('input', (event) => {
+      let value = event.target.value.replace(/\D/g, '');
+      if (value.length > 2) {
+        value = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
+      }
+      event.target.value = value;
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      hideMessage();
+
+      const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+      const expiry = document.getElementById('expiry').value;
+      const cvc = document.getElementById('cvc').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+
+      if (cardNumber.length < 16 || !/^\d{16,19}$/.test(cardNumber)) {
+        showMessage('Lütfen geçerli bir kart numarası girin.', 'error');
+        return;
+      }
+
+      if (!validateExpiry(expiry)) {
+        showMessage('Lütfen geçerli bir son kullanma tarihi girin (AA/YY).', 'error');
+        return;
+      }
+
+      if (!/^\d{3,4}$/.test(cvc)) {
+        showMessage('Lütfen geçerli bir CVC girin.', 'error');
+        return;
+      }
+
+      if (isNaN(amount) || amount <= 0) {
+        showMessage('Lütfen geçerli bir tutar girin.', 'error');
+        return;
+      }
+
+      const formattedAmount = amount.toFixed(2).replace('.', ',');
+      showMessage(`Ödeme başarıyla hazırlandı: ${formattedAmount} TL. Test verileri kullanıldı.`, 'success');
+    });
+  </script>
+</body>
+</html>
