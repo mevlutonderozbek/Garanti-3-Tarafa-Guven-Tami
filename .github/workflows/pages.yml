@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up Pages deployment
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
 
       - name: Upload site contents
         uses: actions/upload-pages-artifact@v4
